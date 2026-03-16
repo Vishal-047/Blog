@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%-include('./partials/head.ejs') -%>
+    <title>Home Page</title>
+</head>
+<body>
+    <%-include('./partials/navbar.ejs') -%>
+    <div class="container mt-4">
+        <% if (user) { %>
+            <h3>Logged in user</h3>
+            <pre><%= JSON.stringify(user, null, 2) %></pre>
+        <% } else { %>
+            <p class="alert alert-primary" role="alert">No user is logged in.</p>
+        <% } %>
+    </div>
+    <%-include('./partials/script.ejs') -%>
+
+</body>
+</html>

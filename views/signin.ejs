@@ -1,0 +1,76 @@
+<%-include('./partials/head.ejs') -%>
+<style>
+  body {
+    background: linear-gradient(135deg, #f7f9fc 0%, #eef2ff 100%);
+    min-height: 100vh;
+  }
+
+  .auth-wrap {
+    min-height: calc(100vh - 90px);
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 480px;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(13, 37, 63, 0.1);
+  }
+
+  .auth-title {
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .auth-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+  }
+
+  .auth-card .form-control {
+    border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .auth-card .form-control:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+  }
+
+  .auth-btn {
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+  }
+</style>
+<%-include('./partials/navbar.ejs') -%>
+
+<div class="container auth-wrap d-flex align-items-center justify-content-center py-4">
+  <div class="card auth-card">
+    <div class="card-body p-4 p-md-5">
+      <h2 class="auth-title mb-2">Sign In</h2>
+      <p class="auth-subtitle mb-4">Continue to your blogging dashboard.</p>
+
+      <form action="/user/signin" method="post">
+        <div class="mb-3">
+          <label for="signinEmail" class="form-label">Email address</label>
+          <input type="email" name="email" class="form-control" id="signinEmail" placeholder="example@email.com" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="signinPassword" class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" id="signinPassword" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-btn w-100">Sign In</button>
+      </form>
+
+      <p class="text-center text-secondary mt-4 mb-0">
+        New here? <a href="/user/signup" class="text-decoration-none">Create an account</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<%-include('./partials/script.ejs') -%>
