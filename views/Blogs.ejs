@@ -23,6 +23,9 @@
         <div class="container mt-3 blog-article-body">
     <pre><%= blog.body %></pre>
         </div>
+        <div class="container mt-3 blog-article-body">
+            <%= blog.createdBy.fullName %>
+        </div>
         </article>
     </div>
     <%- include('./partials/script.ejs') %>

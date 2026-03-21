@@ -29,7 +29,8 @@ router.get("/:id", async (req,res)=>{
         return res.status(400).send('Invalid blog id');
     }
     try {
-        const foundBlog = await blog.findById(id);
+        const foundBlog = await blog.findById(id).populate("createdBy");
+        console.log(foundBlog);
         if (!foundBlog) {
             return res.status(404).send('Blog not found');
         }
