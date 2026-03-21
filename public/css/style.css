@@ -119,6 +119,73 @@ body {
   font-weight: 600;
 }
 
+.comment-section {
+  max-width: 920px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.07);
+}
+
+.comment-heading {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.comment-form {
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.comment-input {
+  border-radius: 10px;
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+.comment-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(2, 132, 199, 0.2);
+  border-color: rgba(14, 116, 144, 0.65);
+}
+
+.comment-submit-btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.comment-list {
+  display: grid;
+  gap: 12px;
+}
+
+.comment-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.comment-author {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  color: #334155;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.comment-empty {
+  color: #64748b;
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .hero-title {
     font-size: 1.6rem;
@@ -130,5 +197,9 @@ body {
 
   .blog-article-title {
     font-size: 1.5rem;
+  }
+
+  .comment-section {
+    padding: 14px;
   }
 }

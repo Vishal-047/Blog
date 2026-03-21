@@ -27,6 +27,37 @@
             <%= blog.createdBy.fullName %>
         </div>
         </article>
+        <section class="comment-section mt-4">
+            <h3 class="comment-heading">Comments (<%= comments.length %>)</h3>
+            <% if (locals.user) { %>
+                <form action="/blog/comment/<%= blog._id %>" method="post" class="comment-form mt-3">
+                    <div>
+                        <input type="text" name="content" placeholder="Write your comment..." class="form-control comment-input" required>
+                    </div>
+                    <button class="btn btn-primary comment-submit-btn mt-3">Post Comment</button>
+                </form>
+            <% } %>
+            <% if (!locals.user) { %>
+                <div class="container mt-3">
+                    Please SignIn to post Comments.
+                </div>
+            <% } %>
+            <div class="comment-list mt-3">
+                <% (comments || []).forEach(comment => { %>
+                    <article class="comment-card">
+                        <div class="comment-author">
+                            <%= comment.createdBy.fullName %>
+                        </div>
+                        <div class="comment-text">
+                            <%= comment.content %>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+            <% if (!comments || comments.length === 0) { %>
+                <p class="comment-empty mt-2">No comments yet. Start the discussion.</p>
+            <% } %>
+        </section>
     </div>
     <%- include('./partials/script.ejs') %>
 </body>
