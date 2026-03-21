@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%-include('./partials/head.ejs') -%>
+    <%- include('./partials/head.ejs') %>
     <title>Home Page</title>
 </head>
 <body>
-    <%-include('./partials/navbar.ejs') -%>
-    <div class="container mt-4">
-        <% if (user) { %>
-            <h3>Logged in user</h3>
-            <pre><%= JSON.stringify(user, null, 2) %></pre>
-        <% } else { %>
-            <p class="alert alert-primary" role="alert">No user is logged in.</p>
-        <% } %>
-    </div>
-    <%-include('./partials/script.ejs') -%>
+    <%- include('./partials/navbar.ejs') %>
 
+    <div class="container mt-4">
+        <div class="hero-banner mb-4">
+            <h1 class="hero-title">Latest Stories</h1>
+            <p class="hero-subtitle">Read ideas, notes, and updates from the community.</p>
+        </div>
+
+        <div class="blog-grid">
+
+            <% (blog || []).forEach(blog => { %>
+
+            <div class="card blog-card">
+                <% 
+                    const imageName = blog.coverImage || blog.coverimage;
+                    const imageSrc = imageName
+                        ? (imageName.startsWith('http') || imageName.startsWith('/') ? imageName : `/uploads/${imageName}`)
+                        : 'https://via.placeholder.com/286x180?text=No+Image';
+                %>
+                <img src="<%= imageSrc %>" class="card-img-top blog-card-image" alt="Blog cover image">
+                <div class="card-body">
+                    <h5 class="card-title blog-card-title"><%=blog.title%></h5>
+                    <a href="/blog/<%= blog._id %>" class="btn btn-primary blog-card-btn">Read Post</a>
+                </div>
+            </div>
+
+            <% }) %>
+
+        </div>
+
+    </div>
+
+    <%- include('./partials/script.ejs') %>
 </body>
 </html>

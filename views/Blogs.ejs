@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head.ejs') %>
+    <title>Home Page</title>
+</head>
+<body>
+    <%- include('./partials/navbar.ejs') %>
+    <div class="container mt-3 px-2 py-4">
+        <article class="blog-article">
+        <div class="blog-article-title">
+        <%= blog.title %>
+        </div>
+        <div class="container mt-3">    
+            <%
+                const imageName = blog.coverImage || blog.coverimage;
+                const imageSrc = imageName
+                    ? (imageName.startsWith('http') || imageName.startsWith('/') ? imageName : `/uploads/${imageName}`)
+                    : 'https://via.placeholder.com/900x500?text=No+Image';
+            %>
+            <img src="<%= imageSrc %>" alt="Blog Image" class="blog-article-image">
+        </div>
+        <div class="container mt-3 blog-article-body">
+    <pre><%= blog.body %></pre>
+        </div>
+        </article>
+    </div>
+    <%- include('./partials/script.ejs') %>
+</body>
+</html>

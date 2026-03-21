@@ -1,5 +1,4 @@
 const Router=require ('express');
-const model=require('mongoose');
 const User=require('../model/user');
 const router=Router();
 
