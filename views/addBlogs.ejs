@@ -5,7 +5,7 @@
     <title>Create Blog</title>
 </head>
 <body>
-    <%-include('./partials/navbar.ejs') -%>
+    <%-include('./partials/navbar.ejs', { user: user, userBlogs: userBlogs }) -%>
     <div class="container mt-4 mb-5">
       <form action="/blog" method="POST" enctype="multipart/form-data" class="create-blog-form">
       <h2 class="create-blog-title">Create New Blog</h2>

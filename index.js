@@ -19,14 +19,42 @@ app.set("views",path.resolve("./views"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(CheckAuthCookie("token"));
+
+// Global middleware to expose user blogs into navbar on all pages
+app.use(async (req, res, next) => {
+  res.locals.user = req.user;
+  if (req.user && req.user._id) {
+    try {
+      const userBlogs = await blog.find({ createdBy: req.user._id }).populate("createdBy");
+      res.locals.userBlogs = userBlogs;
+    } catch (err) {
+      res.locals.userBlogs = [];
+    }
+  } else {
+    res.locals.userBlogs = [];
+  }
+  next();
+});
+
 app.use(express.static(path.resolve("./public")));
 
 app.get("/",async (req,res)=>{
-    const allBlogs=await blog.find({});
+    const allBlogs=await blog.find({}).populate("createdBy");
     res.render("home",{
         user:req.user,
         blog:allBlogs,
     });
+});
+
+app.get("/myblogs", async (req, res) => {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
+  const userBlogs = await blog.find({ createdBy: req.user._id }).populate('createdBy');
+  res.render('myBlogs', {
+    user: req.user,
+    userBlogs,
+  });
 });
 
 app.use("/user", userRoute);

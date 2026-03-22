@@ -27,10 +27,75 @@
     background: rgba(148, 163, 184, 0.2);
   }
 
+  .app-navbar .nav-link[href*="createBlog"] {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    color: #60a5fa !important;
+    font-weight: 600;
+  }
+
+  .app-navbar .nav-link[href*="createBlog"]:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(168, 85, 247, 0.3));
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #93c5fd !important;
+  }
+
   .app-navbar .dropdown-menu {
     border-radius: 10px;
     border: 1px solid rgba(148, 163, 184, 0.3);
     box-shadow: 0 8px 20px rgba(2, 6, 23, 0.15);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .app-navbar .dropdown-item {
+    color: #334155;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .app-navbar .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1e40af;
+  }
+
+  .app-navbar .blog-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .app-navbar .blog-dropdown-item:last-child {
+    border-bottom: none;
+  }
+
+  .app-navbar .blog-dropdown-title {
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .app-navbar .blog-dropdown-date {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  .app-navbar .blog-dropdown-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .app-navbar .blog-dropdown-actions .btn {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 </style>
 
@@ -45,12 +110,17 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
-      </ul>
-      <ul class="navbar-nav ms-auto">
         <% if (locals.user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/myblogs">My Blogs</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="/blog/createBlog">Create Blog</a>
           </li>
+        <% } %>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <% if (locals.user) { %>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <%= locals.user.email %>

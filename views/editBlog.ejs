@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%-include('./partials/head.ejs') -%>
+    <title>Edit Blog</title>
+</head>
+<body>
+    <%-include('./partials/navbar.ejs', { user: user, userBlogs: userBlogs }) -%>
+    <div class="container mt-4 mb-5">
+      <form action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data" class="create-blog-form">
+      <h2 class="create-blog-title">Edit Blog</h2>
+  <div class="mt-3">
+      <label for="coverImage" class="form-label">Cover Image (Optional - leave blank to keep current image)</label>
+      <% 
+          const imageName = blog.coverImage || blog.coverimage;
+          const imageSrc = imageName
+              ? (imageName.startsWith('http') || imageName.startsWith('/') ? imageName : `/uploads/${imageName}`)
+              : 'https://via.placeholder.com/286x180?text=No+Image';
+      %>
+      <div class="mb-2">
+          <img src="<%= imageSrc %>" alt="Current cover image" style="max-width: 100%; height: auto; max-height: 200px;">
+          <p class="mt-2 text-muted">Current image</p>
+      </div>
+      <input type="file" name="coverImage" class="form-control" id="coverImage" aria-describedby="coverImage">
+  </div>
+  <div class="mt-3">
+      <label for="title" class="form-label">Title</label>
+      <input type="text" name="title" placeholder="Enter the title of your Blog" value="<%= blog.title %>" class="form-control" id="title" aria-describedby="title">
+  </div>
+      <div class="mt-3">
+          <label for="body" class="form-label">Content</label>
+          <textarea class="form-control" name="body" placeholder="Write the content of your Blog" id="body" style="height: 180px"><%= blog.body %></textarea>
+        </div>
+      <div class="mt-4">
+          <button type="submit" class="btn btn-primary px-4">Update Blog</button>
+          <a href="/blog/<%= blog._id %>" class="btn btn-secondary px-4">Cancel</a>
+        </div>
+
+  </form>
+  </div>
+    <%-include('./partials/script.ejs') -%>
+
+</body>
+</html>

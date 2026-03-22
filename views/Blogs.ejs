@@ -5,7 +5,7 @@
     <title>Home Page</title>
 </head>
 <body>
-    <%- include('./partials/navbar.ejs') %>
+    <%- include('./partials/navbar.ejs', { user: user, userBlogs: userBlogs }) %>
     <div class="container mt-3 px-2 py-4">
         <article class="blog-article">
         <div class="blog-article-title">

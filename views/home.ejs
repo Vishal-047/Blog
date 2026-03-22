@@ -5,7 +5,7 @@
     <title>Home Page</title>
 </head>
 <body>
-    <%- include('./partials/navbar.ejs') %>
+    <%- include('./partials/navbar.ejs', { user: user }) %>
 
     <div class="container mt-4">
         <div class="hero-banner mb-4">
@@ -27,6 +27,7 @@
                 <img src="<%= imageSrc %>" class="card-img-top blog-card-image" alt="Blog cover image">
                 <div class="card-body">
                     <h5 class="card-title blog-card-title"><%=blog.title%></h5>
+                    <p class="blog-meta">By <%= blog.createdBy?.fullName || 'Anonymous' %></p>
                     <a href="/blog/<%= blog._id %>" class="btn btn-primary blog-card-btn">Read Post</a>
                 </div>
             </div>
@@ -36,15 +37,6 @@
         </div>
 
     </div>
-
-    <h1>
-        To be added...
-        <pre>
-            1. Show own created blog to user, for that create a different section
-            2. show option to edit users own blog content, title or change photo
-            3. show option to delete the blog, change the password
-        </pre>
-    </h1>
 
     <%- include('./partials/script.ejs') %>
 </body>
