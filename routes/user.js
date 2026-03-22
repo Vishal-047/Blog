@@ -26,15 +26,38 @@ router.post("/signin", async (req, res) => {
 router.post('/signup',async (req,res)=>{
     try {
         const {fullName, email, password}=req.body;
+        const normalizedEmail = email?.trim().toLowerCase();
+
+        if (!fullName || !normalizedEmail || !password) {
+            return res.render("signup", {
+                error: "All fields are required"
+            });
+        }
+
+        const existingUser = await User.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            return res.render("signup", {
+                error: "User already exists. Try to login"
+            });
+        }
+
         await User.create({
             fullName,
-            email,
+            email: normalizedEmail,
             password,
         });
         return res.redirect("signin");
     } catch (error) {
+        console.error("Signup error:", error);
+
+        if (error?.code === 11000) {
+            return res.render("signup",{
+                error:"User already exists. Try to login"
+            })
+        }
+
         return res.render("signup",{
-            error:"User already Exists. Try to Login"
+            error:"Unable to create account right now. Please try again."
         })
     }
 })

@@ -10,7 +10,9 @@ const userSchema=new Schema({
     email:{
         type:String,
         required:true,
-        unique:true
+        unique:true,
+        trim:true,
+        lowercase:true,
     },
     salt:{
         type:String,
@@ -27,18 +29,16 @@ const userSchema=new Schema({
     
 },{timestamps:true});
 
-userSchema.pre('save', function(next){
+userSchema.pre('save', function(){
     const user=this;
 
-    if(!user.isModified("password")) return next();
+    if(!user.isModified("password")) return;
 
     const salt=randomBytes(16).toString("hex");
     const HashedPassword=createHmac('sha256',salt).update(user.password).digest("hex");
 
     this.salt=salt;
     this.password=HashedPassword;
-    next();
-
 })
 
 userSchema.static('matchedPassword', async function(email, password){
