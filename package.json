@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test DISABLE_CSRF=true jest --runInBand",
     "start": "nodemon index.js",
     "dev": "nodemon index.js"
   },
@@ -13,14 +13,20 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cookieparser": "^0.1.0",
+    "csurf": "^1.11.0",
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.3.0",
     "multer": "^2.1.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.1.4"
   }
 }

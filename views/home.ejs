@@ -36,6 +36,24 @@
 
         </div>
 
+        <% if (pagination && pagination.totalPages > 1) { %>
+            <nav class="mt-4" aria-label="Blog pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= pagination.currentPage <= 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="/?page=<%= pagination.currentPage - 1 %>">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Page <%= pagination.currentPage %> of <%= pagination.totalPages %>
+                        </span>
+                    </li>
+                    <li class="page-item <%= pagination.currentPage >= pagination.totalPages ? 'disabled' : '' %>">
+                        <a class="page-link" href="/?page=<%= pagination.currentPage + 1 %>">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        <% } %>
+
     </div>
 
     <%- include('./partials/script.ejs') %>

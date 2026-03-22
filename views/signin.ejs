@@ -51,11 +51,15 @@
     <div class="card-body p-4 p-md-5">
       <h2 class="auth-title mb-2">Sign In</h2>
       <p class="auth-subtitle mb-4">Continue to your blogging dashboard.</p>
+      <% if (locals.error) { %>
+        <div class="alert alert-danger" role="alert"><%= locals.error %></div>
+      <% } %>
 
       <form action="/user/signin" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3">
           <label for="signinEmail" class="form-label">Email address</label>
-          <input type="email" name="email" class="form-control" id="signinEmail" placeholder="example@email.com" required>
+          <input type="email" name="email" class="form-control" id="signinEmail" placeholder="example@email.com" value="<%= formData?.email || '' %>" required>
         </div>
 
         <div class="mb-4">

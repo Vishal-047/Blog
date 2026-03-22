@@ -6,6 +6,22 @@ const blog = require('../model/blog');
 const comment = require('../model/comment');
 const router=Router();
 
+function validateBlogInput(title, body) {
+    const cleanedTitle = (title || "").trim();
+    const cleanedBody = (body || "").trim();
+
+    if (!cleanedTitle || !cleanedBody) {
+        return "Title and content are required";
+    }
+    if (cleanedTitle.length < 3) {
+        return "Title must be at least 3 characters long";
+    }
+    if (cleanedTitle.length > 120) {
+        return "Title cannot exceed 120 characters";
+    }
+    return null;
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.resolve('./public/uploads'))
@@ -19,13 +35,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.get('/createBlog', async (req,res)=>{
-    let userBlogs = [];
-    if(req.user){
-        userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+    if (!req.user) {
+        return res.redirect('/user/signin');
     }
+
+    let userBlogs = [];
+    userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+
     return res.render("addBlogs",{
         user:req.user,
         userBlogs: userBlogs,
+        formData: {},
     });
 })
 
@@ -68,6 +88,9 @@ router.post('/comment/:blogId', async(req,res)=>{
     if (!content) {
         return res.status(400).send('Comment content is required');
     }
+    if (content.length > 500) {
+        return res.status(400).send('Comment cannot exceed 500 characters');
+    }
 
     try {
         await comment.create({
@@ -82,13 +105,34 @@ router.post('/comment/:blogId', async(req,res)=>{
 })
 
 router.post('/', upload.single('coverImage'), async (req,res)=>{
-    const {title,body}=req.body;
+    if (!req.user) {
+        return res.status(401).send('Please sign in to create a blog');
+    }
+
+    const { title, body } = req.body;
+    const validationMessage = validateBlogInput(title, body);
+    const userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+
+    if (validationMessage) {
+        return res.status(400).render("addBlogs", {
+            user: req.user,
+            userBlogs,
+            error: validationMessage,
+            formData: { title: (title || "").trim(), body: (body || "").trim() },
+        });
+    }
+
     if (!req.file) {
-        return res.status(400).send('Cover image file is required');
+        return res.status(400).render("addBlogs", {
+            user: req.user,
+            userBlogs,
+            error: "Cover image file is required",
+            formData: { title: (title || "").trim(), body: (body || "").trim() },
+        });
     }
     await blog.create({
-        body,
-        title,
+        body: body.trim(),
+        title: title.trim(),
         createdBy: req.user._id,
         coverImage: req.file.filename
     });
@@ -141,9 +185,20 @@ router.post('/edit/:id', upload.single('coverImage'), async (req,res)=>{
         if (foundBlog.createdBy.toString() !== req.user._id.toString()) {
             return res.status(403).send('You are not authorized to edit this blog');
         }
+
+        const validationMessage = validateBlogInput(title, body);
+        if (validationMessage) {
+            const userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+            return res.status(400).render("editBlog", {
+                user: req.user,
+                blog: foundBlog,
+                userBlogs,
+                error: validationMessage,
+            });
+        }
         
-        foundBlog.title = title || foundBlog.title;
-        foundBlog.body = body || foundBlog.body;
+        foundBlog.title = title.trim();
+        foundBlog.body = body.trim();
         if (req.file) {
             foundBlog.coverImage = req.file.filename;
         }

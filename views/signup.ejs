@@ -51,16 +51,20 @@
     <div class="card-body p-4 p-md-5">
       <h2 class="auth-title mb-2">Create Account</h2>
       <p class="auth-subtitle mb-4">Join and start publishing your ideas.</p>
+      <% if (locals.error) { %>
+        <div class="alert alert-danger" role="alert"><%= locals.error %></div>
+      <% } %>
 
       <form action="/user/signup" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3">
           <label for="signupFullName" class="form-label">Full name</label>
-          <input type="text" name="fullName" class="form-control" id="signupFullName" placeholder="Enter your full name" required>
+          <input type="text" name="fullName" class="form-control" id="signupFullName" placeholder="Enter your full name" value="<%= formData?.fullName || '' %>" required>
         </div>
 
         <div class="mb-3">
           <label for="signupEmail" class="form-label">Email address</label>
-          <input type="email" name="email" class="form-control" id="signupEmail" placeholder="example@email.com" required>
+          <input type="email" name="email" class="form-control" id="signupEmail" placeholder="example@email.com" value="<%= formData?.email || '' %>" required>
         </div>
 
         <div class="mb-4">

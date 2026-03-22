@@ -1,6 +1,12 @@
 const JWT = require ('jsonwebtoken');
 
-const secret='Vi$h@|$|&g#';
+function getJwtSecret(){
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error("JWT_SECRET is not set. Add JWT_SECRET to your environment variables.");
+    }
+    return secret;
+}
 
 function createToken(user){
     const payload={
@@ -8,12 +14,12 @@ function createToken(user){
         email: user.email,
         role:user.role,
     };
-    const token=JWT.sign(payload, secret);
+    const token=JWT.sign(payload, getJwtSecret(), { expiresIn: "7d" });
     return token;
 }
 
 function validateToken(token){
-    const payload=JWT.verify(token, secret);
+    const payload=JWT.verify(token, getJwtSecret());
     return payload;
 }
 

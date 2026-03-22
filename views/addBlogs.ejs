@@ -9,17 +9,21 @@
     <div class="container mt-4 mb-5">
       <form action="/blog" method="POST" enctype="multipart/form-data" class="create-blog-form">
       <h2 class="create-blog-title">Create New Blog</h2>
+  <% if (locals.error) { %>
+    <div class="alert alert-danger mt-3" role="alert"><%= locals.error %></div>
+  <% } %>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <div class="mt-3">
       <label for="coverImage" class="form-label">Cover Image</label>
-      <input type="file" name="coverImage"  class="form-control" id="coverImage" aria-describedby="coverImage">
+      <input type="file" name="coverImage"  class="form-control" id="coverImage" aria-describedby="coverImage" required>
   </div>
   <div class="mt-3">
       <label for="title" name="title" class="form-label">Title</label>
-      <input type="text" name="title" placeholder="Enter the title of your Blog" class="form-control" id="title" aria-describedby="title">
+      <input type="text" name="title" placeholder="Enter the title of your Blog" value="<%= formData?.title || '' %>" class="form-control" id="title" aria-describedby="title" required>
   </div>
       <div class="mt-3">
           <label for="body" class="form-label">Content</label>
-          <textarea class="form-control" name="body" placeholder="Write the content of your Blog" id="body" style="height: 180px"></textarea>
+          <textarea class="form-control" name="body" placeholder="Write the content of your Blog" id="body" style="height: 180px" required><%= formData?.body || '' %></textarea>
         </div>
       <div class="mt-4">
           <button class="btn btn-primary px-4">Publish</button>
