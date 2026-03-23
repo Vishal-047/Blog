@@ -12,6 +12,11 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const POSTS_PER_PAGE = Number(process.env.POSTS_PER_PAGE || 8);
+let connectionPromise = null;
+
+// Vercel sits behind a proxy and forwards client IP in X-Forwarded-For.
+// Trust one hop so express-rate-limit can identify real users correctly.
+app.set("trust proxy", 1);
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -38,6 +43,17 @@ app.use(cookieParser());
 app.use(generalLimiter);
 app.use("/user", authLimiter);
 app.use(CheckAuthCookie("token"));
+
+// In serverless runtimes (like Vercel), ensure DB is connected per request.
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    return next();
+  } catch (err) {
+    console.error("Database connection error:", err);
+    return res.status(500).send("Database unavailable. Please try again.");
+  }
+});
 
 app.use(async (req, res, next) => {
   res.locals.user = req.user;
@@ -107,8 +123,16 @@ async function connectToDatabase() {
     return mongoose.connection;
   }
 
-  await mongoose.connect(process.env.MONGO_URI);
-  return mongoose.connection;
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(process.env.MONGO_URI)
+      .then(() => mongoose.connection)
+      .catch((err) => {
+        connectionPromise = null;
+        throw err;
+      });
+  }
+
+  return connectionPromise;
 }
 
 async function startServer() {
