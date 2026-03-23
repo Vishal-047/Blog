@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test DISABLE_CSRF=true jest --runInBand",
+    "test": "cross-env NODE_ENV=test jest --runInBand",
     "start": "nodemon index.js",
     "dev": "nodemon index.js"
   },
@@ -13,7 +13,6 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cookieparser": "^0.1.0",
-    "csurf": "^1.11.0",
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
     "express": "^5.2.1",

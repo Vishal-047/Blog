@@ -56,7 +56,6 @@
       <% } %>
 
       <form action="/user/signin" method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3">
           <label for="signinEmail" class="form-label">Email address</label>
           <input type="email" name="email" class="form-control" id="signinEmail" placeholder="example@email.com" value="<%= formData?.email || '' %>" required>

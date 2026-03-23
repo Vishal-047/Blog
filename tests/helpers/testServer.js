@@ -6,7 +6,6 @@ let cachedApp;
 
 async function setupApp() {
   process.env.NODE_ENV = "test";
-  process.env.DISABLE_CSRF = "true";
   process.env.JWT_SECRET = process.env.JWT_SECRET || "test-jwt-secret";
 
   if (!mongoServer) {

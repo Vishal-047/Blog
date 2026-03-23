@@ -7,12 +7,11 @@ const path = require("path");
 const cookieParser = require('cookie-parser');
 const { CheckAuthCookie } = require("./middleware/auth");
 const blog = require("./model/blog");
-const csrf = require("csurf");
 const rateLimit = require("express-rate-limit");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const POSTS_PER_PAGE = Number(process.env.POSTS_PER_PAGE || 6);
+const POSTS_PER_PAGE = Number(process.env.POSTS_PER_PAGE || 8);
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -21,6 +20,7 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests. Please try again in a few minutes.",
 });
+
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -39,29 +39,6 @@ app.use(generalLimiter);
 app.use("/user", authLimiter);
 app.use(CheckAuthCookie("token"));
 
-if (process.env.DISABLE_CSRF !== "true") {
-  app.use(
-    csrf({
-      cookie: {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-      },
-    })
-  );
-
-  app.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
-  });
-} else {
-  app.use((req, res, next) => {
-    res.locals.csrfToken = "";
-    next();
-  });
-}
-
-// Global middleware to expose user blogs into navbar on all pages
 app.use(async (req, res, next) => {
   res.locals.user = req.user;
   if (req.user && req.user._id) {
@@ -80,6 +57,7 @@ app.use(async (req, res, next) => {
 app.use(express.static(path.resolve("./public")));
 
 app.get("/",async (req,res)=>{
+    // Basic pagination: page starts at 1, skip = (page-1)*limit.
     const currentPage = Math.max(1, Number(req.query.page) || 1);
     const skip = (currentPage - 1) * POSTS_PER_PAGE;
 
@@ -116,15 +94,6 @@ app.use("/user", userRoute);
 app.use("/blog", blogRoute);
 
 app.use((err, req, res, next) => {
-  if (err && err.code === "EBADCSRFTOKEN") {
-    return res.status(403).render("signin", {
-      error: "Session expired or invalid form token. Please refresh and try again.",
-    });
-  }
-  return next(err);
-});
-
-app.use((err, req, res, next) => {
   console.error("Unhandled server error:", err);
   return res.status(500).send("Internal server error");
 });
@@ -158,4 +127,8 @@ if (require.main === module) {
   });
 }
 
-module.exports = { app, startServer, connectToDatabase };
+
+module.exports = app;
+module.exports.app = app;
+module.exports.startServer = startServer;
+module.exports.connectToDatabase = connectToDatabase;

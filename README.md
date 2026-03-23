@@ -11,7 +11,6 @@ A full-stack blogging app built with `Node.js`, `Express`, `MongoDB`, and `EJS`.
 - Homepage pagination (`?page=1`, `?page=2`, etc.)
 - Input validation with clear error messages
 - Security protections:
-  - CSRF protection for all POST forms
   - Rate limiting for general and auth routes
 - Automated tests for auth and blog flows
 
@@ -20,7 +19,7 @@ A full-stack blogging app built with `Node.js`, `Express`, `MongoDB`, and `EJS`.
 - Backend: `Node.js`, `Express`
 - Database: `MongoDB Atlas` + `Mongoose`
 - Templating: `EJS`
-- Auth/Security: `jsonwebtoken`, `cookie-parser`, `csurf`, `express-rate-limit`
+- Auth/Security: `jsonwebtoken`, `cookie-parser`, `express-rate-limit`
 - Uploads: `multer`
 - Testing: `jest`, `supertest`, `mongodb-memory-server`
 
@@ -88,7 +87,6 @@ Blog:
 
 ## Security Notes
 
-- CSRF tokens are required on all state-changing form requests.
 - Rate limiting is enabled:
   - General limiter for all routes
   - Stricter limiter for `/user/*` auth endpoints

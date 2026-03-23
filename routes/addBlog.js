@@ -10,6 +10,7 @@ function validateBlogInput(title, body) {
     const cleanedTitle = (title || "").trim();
     const cleanedBody = (body || "").trim();
 
+    
     if (!cleanedTitle || !cleanedBody) {
         return "Title and content are required";
     }
@@ -224,9 +225,9 @@ router.post('/delete/:id', async (req,res)=>{
             return res.status(404).send('Blog not found');
         }
         if (foundBlog.createdBy.toString() !== req.user._id.toString()) {
+            // Ownership check, prevents deleting someone else's post.
             return res.status(403).send('You are not authorized to delete this blog');
         }
-        
         await comment.deleteMany({blogId: id});
         await blog.findByIdAndDelete(id);
         return res.redirect('/myblogs');
