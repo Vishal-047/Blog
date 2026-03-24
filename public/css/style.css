@@ -36,6 +36,12 @@ h6,
   box-shadow: 0 10px 22px rgba(31, 42, 54, 0.08);
 }
 
+.app-navbar ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
 .app-navbar .navbar-brand {
   color: var(--ink) !important;
   font-weight: 700;
