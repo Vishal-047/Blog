@@ -14,8 +14,6 @@ const PORT = process.env.PORT || 8000;
 const POSTS_PER_PAGE = Number(process.env.POSTS_PER_PAGE || 8);
 let connectionPromise = null;
 
-// Vercel sits behind a proxy and forwards client IP in X-Forwarded-For.
-// Trust one hop so express-rate-limit can identify real users correctly.
 app.set("trust proxy", 1);
 
 const generalLimiter = rateLimit({
