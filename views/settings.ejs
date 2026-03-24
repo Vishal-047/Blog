@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+  <title>Account Settings</title>
+</head>
+<body>
+  <%- include('./partials/navbar.ejs', { user: user }) %>
+
+  <div class="container mt-4">
+    <section class="create-blog-form">
+      <h2 class="create-blog-title">Account Settings</h2>
+      <p class="text-muted">Manage your profile details and account preferences.</p>
+
+      <% if (success === 'profile-updated') { %>
+        <div class="alert alert-success">Profile updated successfully.</div>
+      <% } %>
+      <% if (locals.error) { %>
+        <div class="alert alert-danger"><%= locals.error %></div>
+      <% } %>
+
+      <form method="POST" action="/user/settings/profile" class="row g-3 mt-1">
+        <div class="col-12">
+          <label class="form-label" for="fullName">Display Name</label>
+          <input class="form-control" id="fullName" name="fullName" value="<%= formData?.fullName || currentUser.fullName %>" required>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-control" id="email" value="<%= currentUser.email %>" disabled>
+        </div>
+
+        <div class="col-12 d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary px-4" type="submit">Save Profile</button>
+          <a class="btn btn-outline-secondary" href="/user/change-password">Change Password</a>
+          <a class="btn btn-outline-secondary" href="/myblogs">Manage Posts</a>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <%- include('./partials/script.ejs') %>
+</body>
+</html>
