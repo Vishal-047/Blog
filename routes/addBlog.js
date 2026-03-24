@@ -29,6 +29,15 @@ const upload = multer({
     },
 });
 
+function runSingleUpload(req, res) {
+    return new Promise((resolve, reject) => {
+        upload.single('coverImage')(req, res, (err) => {
+            if (err) return reject(err);
+            return resolve();
+        });
+    });
+}
+
 router.get('/cover/:id', async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -124,42 +133,64 @@ router.post('/comment/:blogId', async(req,res)=>{
     }
 })
 
-router.post('/', upload.single('coverImage'), async (req,res)=>{
+router.post('/', async (req,res)=>{
     if (!req.user) {
         return res.status(401).send('Please sign in to create a blog');
     }
 
-    const { title, body } = req.body;
-    const validationMessage = validateBlogInput(title, body);
-    const userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+    try {
+        await runSingleUpload(req, res);
 
-    if (validationMessage) {
+        const { title, body } = req.body;
+        const validationMessage = validateBlogInput(title, body);
+        const userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy");
+
+        if (validationMessage) {
+            return res.status(400).render("addBlogs", {
+                user: req.user,
+                userBlogs,
+                error: validationMessage,
+                formData: { title: (title || "").trim(), body: (body || "").trim() },
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).render("addBlogs", {
+                user: req.user,
+                userBlogs,
+                error: "Cover image file is required",
+                formData: { title: (title || "").trim(), body: (body || "").trim() },
+            });
+        }
+
+        const createdBlog = await blog.create({
+            body: body.trim(),
+            title: title.trim(),
+            createdBy: req.user._id,
+            coverImageData: req.file.buffer,
+            coverImageContentType: req.file.mimetype,
+        });
+        createdBlog.coverImage = `/blog/cover/${createdBlog._id}`;
+        await createdBlog.save();
+        return res.redirect('/');
+    } catch (error) {
+        console.error("Create blog failed:", error);
+
+        const userBlogs = await blog.find({createdBy:req.user._id}).populate("createdBy").catch(() => []);
+        const errorMessage = error instanceof multer.MulterError
+            ? (error.code === "LIMIT_FILE_SIZE" ? "Image too large. Max size is 5MB." : `Upload failed: ${error.message}`)
+            : "Failed to publish blog. Please try again.";
+
         return res.status(400).render("addBlogs", {
             user: req.user,
             userBlogs,
-            error: validationMessage,
-            formData: { title: (title || "").trim(), body: (body || "").trim() },
+            error: errorMessage,
+            formData: {
+                title: (req.body?.title || "").trim(),
+                body: (req.body?.body || "").trim(),
+            },
         });
     }
-
-    if (!req.file) {
-        return res.status(400).render("addBlogs", {
-            user: req.user,
-            userBlogs,
-            error: "Cover image file is required",
-            formData: { title: (title || "").trim(), body: (body || "").trim() },
-        });
-    }
-    const createdBlog = await blog.create({
-        body: body.trim(),
-        title: title.trim(),
-        createdBy: req.user._id,
-        coverImageData: req.file.buffer,
-        coverImageContentType: req.file.mimetype,
-    });
-    createdBlog.coverImage = `/blog/cover/${createdBlog._id}`;
-    await createdBlog.save();
-    return res.redirect('/');
 })
 
 router.get('/edit/:id', async (req,res)=>{
@@ -189,18 +220,20 @@ router.get('/edit/:id', async (req,res)=>{
     }
 })
 
-router.post('/edit/:id', upload.single('coverImage'), async (req,res)=>{
+router.post('/edit/:id', async (req,res)=>{
     if(!req.user) {
         return res.status(401).send('Please sign in to edit a blog');
     }
     const { id } = req.params;
-    const {title, body} = req.body;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).send('Invalid blog id');
     }
-    
+
     try {
+        await runSingleUpload(req, res);
+        const {title, body} = req.body;
+
         const foundBlog = await blog.findById(id);
         if (!foundBlog) {
             return res.status(404).send('Blog not found');
@@ -231,6 +264,7 @@ router.post('/edit/:id', upload.single('coverImage'), async (req,res)=>{
         await foundBlog.save();
         return res.redirect(`/blog/${id}`);
     } catch (error) {
+        console.error("Edit blog failed:", error);
         return res.status(500).send('Failed to update blog');
     }
 })
