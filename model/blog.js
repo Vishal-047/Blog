@@ -12,6 +12,12 @@ const blogSchema=new Schema({
     coverImage:{
         type:String
     },
+    coverImageData: {
+        type: Buffer,
+    },
+    coverImageContentType: {
+        type: String,
+    },
     createdBy:{
         type:Schema.Types.ObjectId,
         ref:'user',

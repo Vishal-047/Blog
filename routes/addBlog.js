@@ -1,6 +1,5 @@
 const Router=require ('express');
 const multer=require('multer');
-const path=require('path');
 const mongoose = require('mongoose');
 const blog = require('../model/blog');
 const comment = require('../model/comment');
@@ -23,17 +22,37 @@ function validateBlogInput(title, body) {
     return null;
 }
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve('./public/uploads'))
-  },
-  filename: function (req, file, cb) {
-    const fileName=`${Date.now()}-${file.originalname}`;
-    cb(null, fileName);
-  }
-})
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+    },
+});
 
-const upload = multer({ storage: storage })
+router.get('/cover/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).send('Invalid blog id');
+    }
+
+    try {
+        const foundBlog = await blog.findById(id).select('coverImageData coverImageContentType coverImage');
+        if (!foundBlog) {
+            return res.status(404).send('Blog not found');
+        }
+
+        if (foundBlog.coverImageData) {
+            if (foundBlog.coverImageContentType) {
+                res.set('Content-Type', foundBlog.coverImageContentType);
+            }
+            return res.send(foundBlog.coverImageData);
+        }
+
+        return res.status(404).send('Cover image not found');
+    } catch (error) {
+        return res.status(500).send('Failed to fetch cover image');
+    }
+});
 
 router.get('/createBlog', async (req,res)=>{
     if (!req.user) {
@@ -131,12 +150,15 @@ router.post('/', upload.single('coverImage'), async (req,res)=>{
             formData: { title: (title || "").trim(), body: (body || "").trim() },
         });
     }
-    await blog.create({
+    const createdBlog = await blog.create({
         body: body.trim(),
         title: title.trim(),
         createdBy: req.user._id,
-        coverImage: req.file.filename
+        coverImageData: req.file.buffer,
+        coverImageContentType: req.file.mimetype,
     });
+    createdBlog.coverImage = `/blog/cover/${createdBlog._id}`;
+    await createdBlog.save();
     return res.redirect('/');
 })
 
@@ -201,7 +223,9 @@ router.post('/edit/:id', upload.single('coverImage'), async (req,res)=>{
         foundBlog.title = title.trim();
         foundBlog.body = body.trim();
         if (req.file) {
-            foundBlog.coverImage = req.file.filename;
+            foundBlog.coverImageData = req.file.buffer;
+            foundBlog.coverImageContentType = req.file.mimetype;
+            foundBlog.coverImage = `/blog/cover/${id}`;
         }
         
         await foundBlog.save();
